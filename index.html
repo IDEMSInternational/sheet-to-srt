@@ -7,6 +7,10 @@
             width: 100%;
             height: 400px;
         }
+
+        #downloadButton {
+            display: none;
+        }
     </style>
 </head>
 
@@ -30,7 +34,7 @@
     <script src="row_to_srt.js"></script>
 
     <script>
-        const lastSpreadsheetFileName = "";
+        let srtDownloadFileName = "output.srt";
         console.log("libs ", XLSX, dateFormat);
         const inputElement = document.getElementById("fileInput");
         inputElement.addEventListener("change", handleFiles, false);
@@ -44,6 +48,8 @@
                 let srtOutput = rowsToSRT(rows);
                 console.log("SRT for ", fileList[0], srtOutput);
                 document.getElementById("outputTextArea").value = srtOutput;
+                srtDownloadFileName = fileList[0].name.replace(".xlsx", "") + ".srt";
+                document.getElementById("downloadButton").style.display = "block";
             });
         }
 
@@ -59,12 +65,12 @@
         }
 
         function downloadClicked() {
-            download(lastSpreadsheetFileName.replace(".xlsx", "") + ".srt", document.getElementById("outputTextArea").value);
+            download(srtDownloadFileName, document.getElementById("outputTextArea").value);
         }
 
         function download(filename, text) {
             var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('href', 'data:text/srt;charset=utf-8,' + encodeURIComponent(text));
             element.setAttribute('download', filename);
 
             element.style.display = 'none';
