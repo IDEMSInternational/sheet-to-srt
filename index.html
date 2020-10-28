@@ -16,6 +16,11 @@
         Upload XLSX files
         <input type="file" id="fileInput">
     </label>
+    <p>Example files are in this 
+        <a href="https://drive.google.com/drive/folders/1iFMquhLZPjDtps-W1S2YDFz2TPYbdv9V?usp=sharing"
+            target="_blank">
+            Google Drive folder
+        </a>
     <h2>
         SRT Output
     </h2>
@@ -23,7 +28,7 @@
     <script lang="javascript" src="lib/date.format.js"></script>
     <script lang="javascript" src="lib/xlsx.full.min.js"></script>
     <script src="row_to_srt.js"></script>
-    
+
     <script>
         console.log("libs ", XLSX, dateFormat);
         const inputElement = document.getElementById("fileInput");
