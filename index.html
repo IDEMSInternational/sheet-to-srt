@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <title>XLSX to SRT (Subtitles)</title>
+    <style>
+        #outputTextArea {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Convert XLSX to SRT (Subtitle) file</h1>
+    <label>
+        Upload XLSX files
+        <input type="file" id="fileInput">
+    </label>
+    <h2>
+        SRT Output
+    </h2>
+    <textarea id="outputTextArea"></textarea>
+    <script lang="javascript" src="lib/date.format.js"></script>
+    <script lang="javascript" src="lib/xlsx.full.min.js"></script>
+    <script src="row_to_srt.js"></script>
+    <script>
+        console.log("libs ", XLSX, dateFormat);
+        const inputElement = document.getElementById("fileInput");
+        inputElement.addEventListener("change", handleFiles, false);
+        function handleFiles() {
+            const fileList = this.files; /* now you can work with the file list */
+            console.log(fileList);
+            handleFile(fileList[0], (workbook) => {
+                let sheetName = workbook.SheetNames[0];
+                let rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                let srtOutput = rowsToSRT(rows);
+                console.log("SRT for ", fileList[0], srtOutput);
+                document.getElementById("outputTextArea").value = srtOutput;
+            });
+        }
+        function handleFile(file, workbookCallback) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                var data = new Uint8Array(reader.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                console.log("Workbook", workbook);
+                workbookCallback(workbook);
+            }
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+
+</html>
