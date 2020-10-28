@@ -16,26 +16,28 @@
         Upload XLSX files
         <input type="file" id="fileInput">
     </label>
-    <p>Example files are in this 
-        <a href="https://drive.google.com/drive/folders/1iFMquhLZPjDtps-W1S2YDFz2TPYbdv9V?usp=sharing"
-            target="_blank">
+    <p>Example files are in this
+        <a href="https://drive.google.com/drive/folders/1iFMquhLZPjDtps-W1S2YDFz2TPYbdv9V?usp=sharing" target="_blank">
             Google Drive folder
         </a>
     <h2>
         SRT Output
     </h2>
     <textarea id="outputTextArea"></textarea>
+    <button id="downloadButton" onclick="downloadClicked()">Download SRT file</button>
     <script lang="javascript" src="lib/date.format.js"></script>
     <script lang="javascript" src="lib/xlsx.full.min.js"></script>
     <script src="row_to_srt.js"></script>
 
     <script>
+        const lastSpreadsheetFileName = "";
         console.log("libs ", XLSX, dateFormat);
         const inputElement = document.getElementById("fileInput");
         inputElement.addEventListener("change", handleFiles, false);
         function handleFiles() {
             const fileList = this.files; /* now you can work with the file list */
             console.log(fileList);
+            fileName = fileList[0].name;
             handleFile(fileList[0], (workbook) => {
                 let sheetName = workbook.SheetNames[0];
                 let rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
@@ -44,6 +46,7 @@
                 document.getElementById("outputTextArea").value = srtOutput;
             });
         }
+
         function handleFile(file, workbookCallback) {
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -54,6 +57,24 @@
             }
             reader.readAsArrayBuffer(file);
         }
+
+        function downloadClicked() {
+            download(lastSpreadsheetFileName.replace(".xlsx", "") + ".srt", document.getElementById("outputTextArea").value);
+        }
+
+        function download(filename, text) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
     </script>
 </body>
 
