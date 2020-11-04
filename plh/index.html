@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <title>Convert XLSX to Rapid Pro JSON</title>
+    <style>
+        #outputTextArea {
+            width: 100%;
+            height: 400px;
+        }
+
+        #downloadButton {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Convert XLSX to Rapid Pro JSON</h1>
+    <label>
+        Upload XLSX files
+        <input type="file" id="fileInput">
+    </label>
+    <p>Example files are in this
+        <a href="https://drive.google.com/drive/folders/1iFMquhLZPjDtps-W1S2YDFz2TPYbdv9V?usp=sharing" target="_blank">
+            Google Drive folder
+        </a>
+    <h2>
+        Rapid Pro JSON Output
+    </h2>
+    <textarea id="outputTextArea"></textarea>
+    <button id="downloadButton" onclick="downloadClicked()">Download Rapid Pro JSON file</button>
+    <script lang="javascript" src="../lib/xlsx.full.min.js"></script>
+    <script src="plh-convert-web.js"></script>
+
+    <script>
+        let rpDownloadFileName = "output.rp.json";
+        console.log("libs ", XLSX);
+        const inputElement = document.getElementById("fileInput");
+        inputElement.addEventListener("change", handleFiles, false);
+        function handleFiles() {
+            const fileList = this.files; /* now you can work with the file list */
+            console.log(fileList);
+            fileName = fileList[0].name;
+            handleFile(fileList[0], (workbook) => {
+                let output = processWorkbook(workbook);
+                console.log("Output for ", fileList[0], output);
+                document.getElementById("outputTextArea").value = output.rpJSONString;
+                rpDownloadFileName = fileList[0].name.replace(".xlsx", "") + ".rp.json";
+                document.getElementById("downloadButton").style.display = "block";
+            });
+        }
+
+        function handleFile(file, workbookCallback) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                var data = new Uint8Array(reader.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                console.log("Workbook", workbook);
+                workbookCallback(workbook);
+            }
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadClicked() {
+            download(rpDownloadFileName, document.getElementById("outputTextArea").value);
+        }
+
+        function download(filename, text) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/srt;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+    </script>
+</body>
+
+</html>
